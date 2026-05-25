@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Gerenciar {{ solicitacao.protocolo }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'solicitacoes:painel_servidor' %}" class="text-decoration-none text-muted small">
+    <i class="bi bi-arrow-left me-1"></i>Voltar ao painel
+  </a>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card p-4 mb-4">
+      <h5 class="fw-bold mb-1">{{ solicitacao.servico.nome }}</h5>
+      <code class="text-primary fw-bold">{{ solicitacao.protocolo }}</code>
+      <hr>
+      <h6 class="fw-semibold text-muted mb-2">Descrição do cidadão</h6>
+      <p class="mb-0">{{ solicitacao.descricao }}</p>
+    </div>
+
+    <!-- Formulário de atualização -->
+    <div class="card p-4">
+      <h5 class="fw-bold mb-4"><i class="bi bi-pencil-square text-primary me-2"></i>Atualizar atendimento</h5>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ form.status.label }}</label>
+          {{ form.status }}
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">{{ form.observacao.label }}</label>
+          {{ form.observacao }}
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-gov fw-semibold">
+            <i class="bi bi-check-circle me-2"></i>Salvar atualização
+          </button>
+          <a href="{% url 'solicitacoes:painel_servidor' %}" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lateral com infos -->
+  <div class="col-lg-5">
+    <div class="card p-4 mb-3">
+      <h6 class="fw-bold mb-3">Dados da solicitação</h6>
+      <dl class="row small mb-0">
+        <dt class="col-5 text-muted">Protocolo</dt>
+        <dd class="col-7"><code>{{ solicitacao.protocolo }}</code></dd>
+
+        <dt class="col-5 text-muted">Status atual</dt>
+        <dd class="col-7">
+          <span class="badge bg-{{ solicitacao.get_status_cor }}">{{ solicitacao.get_status_display }}</span>
+        </dd>
+
+        <dt class="col-5 text-muted">Setor</dt>
+        <dd class="col-7">{{ solicitacao.setor_responsavel }}</dd>
+
+        <dt class="col-5 text-muted">Abertura</dt>
+        <dd class="col-7">{{ solicitacao.data_abertura|date:"d/m/Y H:i" }}</dd>
+
+        {% if solicitacao.data_prazo %}
+        <dt class="col-5 text-muted">Prazo</dt>
+        <dd class="col-7">{{ solicitacao.data_prazo|date:"d/m/Y" }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    <div class="card p-4">
+      <h6 class="fw-bold mb-3">Dados do cidadão</h6>
+      <dl class="row small mb-0">
+        <dt class="col-4 text-muted">Nome</dt>
+        <dd class="col-8">{{ solicitacao.cidadao.get_full_name }}</dd>
+
+        <dt class="col-4 text-muted">CPF</dt>
+        <dd class="col-8">{{ solicitacao.cidadao.cpf }}</dd>
+
+        <dt class="col-4 text-muted">E-mail</dt>
+        <dd class="col-8">{{ solicitacao.cidadao.email }}</dd>
+
+        {% if solicitacao.cidadao.telefone %}
+        <dt class="col-4 text-muted">Telefone</dt>
+        <dd class="col-8">{{ solicitacao.cidadao.telefone }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    {% if solicitacao.observacao %}
+    <div class="card p-3 mt-3 border-start border-4 border-secondary">
+      <h6 class="fw-semibold small mb-1">Observação anterior</h6>
+      <p class="small mb-0 text-muted">{{ solicitacao.observacao }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

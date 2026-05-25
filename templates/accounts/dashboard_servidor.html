@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Painel do Servidor{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+    <i class="bi bi-person-badge-fill fs-2 text-primary"></i>
+  </div>
+  <div>
+    <h4 class="fw-bold mb-0">{{ servidor.cargo }} {{ servidor.first_name }} {{ servidor.last_name }}</h4>
+    <p class="text-muted mb-0 small">Matrícula: {{ servidor.matricula }} &mdash; Setor: {{ servidor.setor }}</p>
+  </div>
+</div>
+
+<!-- Estatísticas -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="card p-3 text-center border-start border-4 border-primary">
+      <div class="fs-2 fw-bold text-primary">{{ total }}</div>
+      <div class="text-muted small">Total de solicitações</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-3 text-center border-start border-4 border-warning">
+      <div class="fs-2 fw-bold text-warning">{{ pendentes }}</div>
+      <div class="text-muted small">Aguardando análise</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-3 text-center border-start border-4 border-success">
+      <div class="fs-2 fw-bold text-success">{{ concluidas }}</div>
+      <div class="text-muted small">Concluídas</div>
+    </div>
+  </div>
+</div>
+
+<!-- Ações -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6">
+    <a href="{% url 'solicitacoes:painel_servidor' %}" class="card p-3 text-center text-decoration-none d-block">
+      <i class="bi bi-kanban-fill fs-2 text-primary mb-2 d-block"></i>
+      <div class="fw-semibold text-dark">Gerenciar Solicitações</div>
+      <div class="text-muted small">Ver, aprovar e atualizar atendimentos</div>
+    </a>
+  </div>
+  <div class="col-sm-6">
+    <a href="{% url 'solicitacoes:painel_servidor' %}?status=aberta" class="card p-3 text-center text-decoration-none d-block">
+      <i class="bi bi-folder2-open fs-2 text-warning mb-2 d-block"></i>
+      <div class="fw-semibold text-dark">Solicitações Pendentes</div>
+      <div class="text-muted small">{{ pendentes }} aguardando análise</div>
+    </a>
+  </div>
+</div>
+
+<!-- Solicitações recentes -->
+<div class="card p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Solicitações recentes</h5>
+    <a href="{% url 'solicitacoes:painel_servidor' %}" class="btn btn-outline-primary btn-sm">Ver painel completo</a>
+  </div>
+  {% if recentes %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Protocolo</th>
+          <th>Cidadão</th>
+          <th>Serviço</th>
+          <th>Status</th>
+          <th>Data</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sol in recentes %}
+        <tr>
+          <td><code class="fw-bold">{{ sol.protocolo }}</code></td>
+          <td>{{ sol.cidadao.get_full_name }}</td>
+          <td>{{ sol.servico.nome }}</td>
+          <td>
+            <span class="badge bg-{{ sol.get_status_cor }} status-badge">{{ sol.get_status_display }}</span>
+          </td>
+          <td class="text-muted small">{{ sol.data_abertura|date:"d/m/Y" }}</td>
+          <td>
+            <a href="{% url 'solicitacoes:gerenciar' sol.protocolo %}" class="btn btn-sm btn-gov">
+              <i class="bi bi-pencil-square"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-4 text-muted">
+    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+    Nenhuma solicitação registrada ainda.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

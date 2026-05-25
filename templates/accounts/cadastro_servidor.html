@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Acesso de Servidor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card p-4 mt-2">
+      <div class="text-center mb-4">
+        <i class="bi bi-person-badge-fill fs-1 text-primary"></i>
+        <h4 class="fw-bold mt-2 mb-0">Acesso de Servidor Público</h4>
+        <p class="text-muted small">Área restrita — código de acesso obrigatório</p>
+      </div>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <h6 class="text-muted fw-semibold mb-3 border-bottom pb-2">Dados pessoais</h6>
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.first_name.label }}</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.last_name.label }}</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.email.label }}</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.telefone.label }}</label>
+            {{ form.telefone }}
+          </div>
+        </div>
+
+        <h6 class="text-muted fw-semibold mb-3 border-bottom pb-2">Dados funcionais</h6>
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.matricula.label }}</label>
+            {{ form.matricula }}
+            {% if form.matricula.errors %}<div class="text-danger small">{{ form.matricula.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.setor.label }}</label>
+            {{ form.setor }}
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ form.cargo.label }}</label>
+            {{ form.cargo }}
+          </div>
+        </div>
+
+        <h6 class="text-muted fw-semibold mb-3 border-bottom pb-2">Acesso ao sistema</h6>
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ form.username.label }}</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.password1.label }}</label>
+            {{ form.password1 }}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">{{ form.password2.label }}</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ form.codigo_servidor.label }}</label>
+            {{ form.codigo_servidor }}
+            <div class="form-text">{{ form.codigo_servidor.help_text }}</div>
+            {% if form.codigo_servidor.errors %}<div class="text-danger small">{{ form.codigo_servidor.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2 small">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-gov w-100 py-2 fw-semibold">
+          <i class="bi bi-shield-lock me-2"></i>Criar acesso de servidor
+        </button>
+      </form>
+
+      <div class="text-center mt-3 small text-muted">
+        <a href="{% url 'accounts:login' %}" class="text-decoration-none">← Voltar ao login</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

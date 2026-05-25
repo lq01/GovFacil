@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}GovFácil{% endblock %} — Serviços Públicos Digitais</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --gov-blue: #1351b4;
+      --gov-blue-dark: #0c326f;
+      --gov-yellow: #ffcd07;
+    }
+    body { background-color: #f5f6fa; font-family: 'Segoe UI', sans-serif; }
+    .navbar-gov { background-color: var(--gov-blue); }
+    .navbar-gov .navbar-brand, .navbar-gov .nav-link { color: #fff !important; }
+    .navbar-gov .nav-link:hover { color: var(--gov-yellow) !important; }
+    .navbar-gov .nav-link.active { color: var(--gov-yellow) !important; font-weight: 600; }
+    .badge-notif { font-size: .6rem; }
+    .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,.07); border-radius: 12px; }
+    .btn-gov { background-color: var(--gov-blue); color: #fff; border: none; }
+    .btn-gov:hover { background-color: var(--gov-blue-dark); color: #fff; }
+    .status-badge { font-size: .8rem; padding: .35em .7em; border-radius: 20px; }
+    footer { background-color: var(--gov-blue-dark); color: #cdd3de; }
+    .faixa-gov { height: 4px; background: linear-gradient(90deg, var(--gov-blue) 60%, var(--gov-yellow) 100%); }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="faixa-gov"></div>
+
+<nav class="navbar navbar-expand-lg navbar-gov shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+      <i class="bi bi-building-fill-check fs-4"></i>
+      <span>GovFácil</span>
+    </a>
+    <button class="navbar-toggler border-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <i class="bi bi-list text-white fs-4"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'servicos:lista' %}"><i class="bi bi-grid me-1"></i>Serviços</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'solicitacoes:buscar' %}"><i class="bi bi-search me-1"></i>Buscar Protocolo</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        {% if user.is_authenticated %}
+          {% if user.tipo == 'cidadao' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'solicitacoes:nova' %}"><i class="bi bi-plus-circle me-1"></i>Nova Solicitação</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'solicitacoes:minhas' %}"><i class="bi bi-list-check me-1"></i>Minhas Solicitações</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'solicitacoes:painel_servidor' %}"><i class="bi bi-speedometer2 me-1"></i>Painel</a>
+            </li>
+          {% endif %}
+          <li class="nav-item position-relative">
+            <a class="nav-link" href="{% url 'notificacoes:lista' %}">
+              <i class="bi bi-bell"></i>
+              <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-notif" style="display:none">!</span>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i>{{ user.first_name|default:user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}"><i class="bi bi-house me-2"></i>Dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
+                  <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Sair</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}"><i class="bi bi-box-arrow-in-right me-1"></i>Entrar</a></li>
+          <li class="nav-item"><a class="btn btn-warning btn-sm ms-2 fw-semibold" href="{% url 'accounts:cadastro_cidadao' %}">Cadastre-se</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="py-4">
+  <div class="container">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="py-4 mt-5">
+  <div class="container text-center">
+    <p class="mb-1"><i class="bi bi-building-fill-check me-2"></i><strong class="text-white">GovFácil</strong> — Plataforma Digital de Serviços Públicos</p>
+    <small>Projeto acadêmico — ADS · Programação Orientada a Objetos</small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% if user.is_authenticated %}
+<script>
+  fetch("{% url 'notificacoes:contagem' %}")
+    .then(r => r.json())
+    .then(data => {
+      const badge = document.getElementById('notif-badge');
+      if (data.count > 0) { badge.textContent = data.count; badge.style.display = 'inline'; }
+    });
+</script>
+{% endif %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>

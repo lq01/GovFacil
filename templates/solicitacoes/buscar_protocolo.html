@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Buscar Protocolo{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="text-center mb-4">
+      <i class="bi bi-search fs-1 text-primary"></i>
+      <h4 class="fw-bold mt-2 mb-1">Acompanhar Protocolo</h4>
+      <p class="text-muted small">Informe o número do protocolo para ver o status da sua solicitação</p>
+    </div>
+
+    <div class="card p-4 mb-4">
+      <form method="get">
+        <div class="input-group">
+          {{ form.protocolo }}
+          <button class="btn btn-gov px-4" type="submit">
+            <i class="bi bi-search me-1"></i>Buscar
+          </button>
+        </div>
+        {% if form.protocolo.errors %}
+        <div class="text-danger small mt-1">{{ form.protocolo.errors.0 }}</div>
+        {% endif %}
+      </form>
+    </div>
+
+    {% if erro %}
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+      <i class="bi bi-x-circle-fill fs-5"></i>
+      <div>{{ erro }}</div>
+    </div>
+    {% endif %}
+
+    {% if solicitacao %}
+    <div class="card p-4 border-start border-4 border-{{ solicitacao.get_status_cor }}">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h6 class="fw-bold mb-0">{{ solicitacao.servico.nome }}</h6>
+          <code class="text-primary">{{ solicitacao.protocolo }}</code>
+        </div>
+        <span class="badge bg-{{ solicitacao.get_status_cor }} fs-6 px-3 py-2">
+          <i class="bi {{ solicitacao.get_status_icone }} me-1"></i>{{ solicitacao.get_status_display }}
+        </span>
+      </div>
+      <dl class="row small mb-3">
+        <dt class="col-5 text-muted">Setor responsável</dt>
+        <dd class="col-7">{{ solicitacao.setor_responsavel }}</dd>
+        <dt class="col-5 text-muted">Data de abertura</dt>
+        <dd class="col-7">{{ solicitacao.data_abertura|date:"d/m/Y H:i" }}</dd>
+        {% if solicitacao.data_prazo %}
+        <dt class="col-5 text-muted">Prazo estimado</dt>
+        <dd class="col-7">{{ solicitacao.data_prazo|date:"d/m/Y" }}</dd>
+        {% endif %}
+        {% if solicitacao.servidor_responsavel %}
+        <dt class="col-5 text-muted">Atendente</dt>
+        <dd class="col-7">{{ solicitacao.servidor_responsavel.get_full_name }}</dd>
+        {% endif %}
+      </dl>
+      {% if solicitacao.observacao %}
+      <div class="alert alert-light border-start border-3 border-primary py-2 mb-0 small">
+        <strong>Observação:</strong> {{ solicitacao.observacao }}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if not solicitacao and not erro %}
+    <div class="card p-4 bg-light border-0 text-center text-muted">
+      <i class="bi bi-journal-text fs-1 mb-2"></i>
+      <p class="mb-0 small">O número de protocolo tem o formato <strong>GF + ano + 6 dígitos</strong><br>Exemplo: <code>GF2025123456</code></p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

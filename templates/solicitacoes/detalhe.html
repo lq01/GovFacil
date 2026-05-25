@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block title %}Protocolo {{ solicitacao.protocolo }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'solicitacoes:minhas' %}" class="text-decoration-none text-muted small">
+    <i class="bi bi-arrow-left me-1"></i>Minhas solicitações
+  </a>
+</div>
+
+<div class="row g-4">
+  <!-- Coluna principal -->
+  <div class="col-lg-8">
+    <div class="card p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h5 class="fw-bold mb-1">{{ solicitacao.servico.nome }}</h5>
+          <code class="text-primary fw-bold fs-6">{{ solicitacao.protocolo }}</code>
+        </div>
+        <span class="badge bg-{{ solicitacao.get_status_cor }} fs-6 px-3 py-2">
+          <i class="bi {{ solicitacao.get_status_icone }} me-1"></i>{{ solicitacao.get_status_display }}
+        </span>
+      </div>
+
+      <hr>
+
+      <h6 class="fw-semibold text-muted mb-2">Descrição da solicitação</h6>
+      <p class="mb-4">{{ solicitacao.descricao }}</p>
+
+      {% if solicitacao.observacao %}
+      <div class="alert alert-light border-start border-4 border-primary mb-0">
+        <h6 class="fw-semibold mb-1"><i class="bi bi-chat-left-text me-2"></i>Observação do servidor</h6>
+        <p class="mb-0">{{ solicitacao.observacao }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Linha do tempo -->
+    <div class="card p-4">
+      <h6 class="fw-bold mb-4">Linha do tempo</h6>
+      <div class="position-relative ps-4" style="border-left: 2px solid #dee2e6;">
+
+        <div class="mb-3 position-relative">
+          <div class="position-absolute bg-primary rounded-circle" style="width:12px;height:12px;left:-23px;top:4px;"></div>
+          <div class="fw-semibold small">Solicitação aberta</div>
+          <div class="text-muted small">{{ solicitacao.data_abertura|date:"d/m/Y H:i" }}</div>
+        </div>
+
+        {% if solicitacao.status != 'aberta' %}
+        <div class="mb-3 position-relative">
+          <div class="position-absolute bg-warning rounded-circle" style="width:12px;height:12px;left:-23px;top:4px;"></div>
+          <div class="fw-semibold small">Em análise pela equipe</div>
+          <div class="text-muted small">Setor: {{ solicitacao.setor_responsavel }}</div>
+        </div>
+        {% endif %}
+
+        {% if solicitacao.status in 'aprovada,em_andamento,concluida' %}
+        <div class="mb-3 position-relative">
+          <div class="position-absolute bg-info rounded-circle" style="width:12px;height:12px;left:-23px;top:4px;"></div>
+          <div class="fw-semibold small">Aprovada</div>
+          {% if solicitacao.servidor_responsavel %}
+          <div class="text-muted small">por {{ solicitacao.servidor_responsavel.get_full_name }}</div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {% if solicitacao.status == 'concluida' %}
+        <div class="mb-3 position-relative">
+          <div class="position-absolute bg-success rounded-circle" style="width:12px;height:12px;left:-23px;top:4px;"></div>
+          <div class="fw-semibold small text-success">Concluída ✓</div>
+          <div class="text-muted small">{{ solicitacao.data_atualizacao|date:"d/m/Y H:i" }}</div>
+        </div>
+        {% endif %}
+
+        {% if solicitacao.status == 'rejeitada' %}
+        <div class="mb-3 position-relative">
+          <div class="position-absolute bg-danger rounded-circle" style="width:12px;height:12px;left:-23px;top:4px;"></div>
+          <div class="fw-semibold small text-danger">Rejeitada</div>
+          <div class="text-muted small">{{ solicitacao.data_atualizacao|date:"d/m/Y H:i" }}</div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Coluna lateral -->
+  <div class="col-lg-4">
+    <div class="card p-4 mb-3">
+      <h6 class="fw-bold mb-3">Informações</h6>
+      <dl class="row small mb-0">
+        <dt class="col-6 text-muted">Protocolo</dt>
+        <dd class="col-6"><code>{{ solicitacao.protocolo }}</code></dd>
+
+        <dt class="col-6 text-muted">Categoria</dt>
+        <dd class="col-6">{{ solicitacao.servico.get_categoria_display }}</dd>
+
+        <dt class="col-6 text-muted">Setor</dt>
+        <dd class="col-6">{{ solicitacao.setor_responsavel }}</dd>
+
+        <dt class="col-6 text-muted">Abertura</dt>
+        <dd class="col-6">{{ solicitacao.data_abertura|date:"d/m/Y" }}</dd>
+
+        {% if solicitacao.data_prazo %}
+        <dt class="col-6 text-muted">Prazo</dt>
+        <dd class="col-6">{{ solicitacao.data_prazo|date:"d/m/Y" }}</dd>
+        {% endif %}
+
+        {% if solicitacao.servidor_responsavel %}
+        <dt class="col-6 text-muted">Atendente</dt>
+        <dd class="col-6">{{ solicitacao.servidor_responsavel.get_full_name }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    <div class="d-grid gap-2">
+      <a href="{% url 'solicitacoes:nova' %}" class="btn btn-gov btn-sm">
+        <i class="bi bi-plus-circle me-1"></i>Nova solicitação
+      </a>
+      <a href="{% url 'solicitacoes:minhas' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-list-check me-1"></i>Todas as solicitações
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Meu Painel{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+    <i class="bi bi-person-circle fs-2 text-primary"></i>
+  </div>
+  <div>
+    <h4 class="fw-bold mb-0">Olá, {{ cidadao.first_name }}!</h4>
+    <p class="text-muted mb-0 small">CPF: {{ cidadao.cpf }} &mdash; {{ cidadao.email }}</p>
+  </div>
+  {% if notificacoes_nao_lidas %}
+  <a href="{% url 'notificacoes:lista' %}" class="btn btn-warning btn-sm ms-auto">
+    <i class="bi bi-bell-fill me-1"></i>{{ notificacoes_nao_lidas }} nova{{ notificacoes_nao_lidas|pluralize }}
+  </a>
+  {% endif %}
+</div>
+
+<!-- Cards de estatísticas -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="card p-3 text-center border-start border-4 border-primary">
+      <div class="fs-2 fw-bold text-primary">{{ total }}</div>
+      <div class="text-muted small">Total de solicitações</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-3 text-center border-start border-4 border-warning">
+      <div class="fs-2 fw-bold text-warning">{{ em_aberto }}</div>
+      <div class="text-muted small">Em andamento</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-3 text-center border-start border-4 border-success">
+      <div class="fs-2 fw-bold text-success">{{ concluidas }}</div>
+      <div class="text-muted small">Concluídas</div>
+    </div>
+  </div>
+</div>
+
+<!-- Ações rápidas -->
+<div class="row g-3 mb-4">
+  <div class="col-12"><h5 class="fw-bold mb-0">Ações rápidas</h5></div>
+  <div class="col-sm-6 col-md-3">
+    <a href="{% url 'solicitacoes:nova' %}" class="card p-3 text-center text-decoration-none h-100 d-block">
+      <i class="bi bi-plus-circle-fill fs-2 text-primary mb-2 d-block"></i>
+      <div class="fw-semibold text-dark">Nova Solicitação</div>
+      <div class="text-muted small">Solicitar um serviço</div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <a href="{% url 'solicitacoes:minhas' %}" class="card p-3 text-center text-decoration-none h-100 d-block">
+      <i class="bi bi-list-check fs-2 text-success mb-2 d-block"></i>
+      <div class="fw-semibold text-dark">Minhas Solicitações</div>
+      <div class="text-muted small">Ver histórico completo</div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <a href="{% url 'solicitacoes:buscar' %}" class="card p-3 text-center text-decoration-none h-100 d-block">
+      <i class="bi bi-search fs-2 text-info mb-2 d-block"></i>
+      <div class="fw-semibold text-dark">Buscar Protocolo</div>
+      <div class="text-muted small">Acompanhar pelo número</div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-md-3">
+    <a href="{% url 'notificacoes:lista' %}" class="card p-3 text-center text-decoration-none h-100 d-block">
+      <i class="bi bi-bell fs-2 text-warning mb-2 d-block"></i>
+      <div class="fw-semibold text-dark">Notificações</div>
+      <div class="text-muted small">Ver todas as mensagens</div>
+    </a>
+  </div>
+</div>
+
+<!-- Últimas solicitações -->
+<div class="card p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Últimas solicitações</h5>
+    <a href="{% url 'solicitacoes:minhas' %}" class="btn btn-outline-primary btn-sm">Ver todas</a>
+  </div>
+  {% if solicitacoes %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Protocolo</th>
+          <th>Serviço</th>
+          <th>Status</th>
+          <th>Abertura</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sol in solicitacoes %}
+        <tr>
+          <td><code class="fw-bold">{{ sol.protocolo }}</code></td>
+          <td>{{ sol.servico.nome }}</td>
+          <td>
+            <span class="badge bg-{{ sol.get_status_cor }} status-badge">
+              <i class="bi {{ sol.get_status_icone }} me-1"></i>{{ sol.get_status_display }}
+            </span>
+          </td>
+          <td class="text-muted small">{{ sol.data_abertura|date:"d/m/Y" }}</td>
+          <td>
+            <a href="{% url 'solicitacoes:detalhe' sol.protocolo %}" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-4 text-muted">
+    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+    Você ainda não fez nenhuma solicitação.
+    <div class="mt-2">
+      <a href="{% url 'solicitacoes:nova' %}" class="btn btn-gov btn-sm">Fazer primeira solicitação</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

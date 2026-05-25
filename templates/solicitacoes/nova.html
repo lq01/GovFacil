@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Nova Solicitação{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="mb-3">
+      <a href="{% url 'servicos:lista' %}" class="text-decoration-none text-muted small">
+        <i class="bi bi-arrow-left me-1"></i>Voltar aos serviços
+      </a>
+    </div>
+    <div class="card p-4">
+      <div class="mb-4">
+        <h4 class="fw-bold mb-1"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Nova Solicitação</h4>
+        <p class="text-muted small mb-0">Preencha os dados abaixo. Um protocolo será gerado automaticamente.</p>
+      </div>
+
+      {% if servico_inicial %}
+      <div class="alert alert-primary py-2 d-flex align-items-center gap-2 mb-4">
+        <i class="bi {{ servico_inicial.get_icone }} fs-5"></i>
+        <div>
+          <strong>{{ servico_inicial.nome }}</strong>
+          <div class="small">Prazo estimado: {{ servico_inicial.prazo_dias }} dia{{ servico_inicial.prazo_dias|pluralize }} &mdash; {{ servico_inicial.setor_responsavel }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ form.servico.label }}</label>
+          {{ form.servico }}
+          {% if form.servico.errors %}<div class="text-danger small mt-1">{{ form.servico.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">{{ form.descricao.label }}</label>
+          {{ form.descricao }}
+          {% if form.descricao.errors %}<div class="text-danger small mt-1">{{ form.descricao.errors.0 }}</div>{% endif %}
+          <div class="form-text">Seja detalhado para agilizar o atendimento.</div>
+        </div>
+        <button type="submit" class="btn btn-gov w-100 py-2 fw-semibold">
+          <i class="bi bi-send me-2"></i>Enviar solicitação
+        </button>
+      </form>
+    </div>
+
+    <div class="card p-3 mt-3 bg-light border-0">
+      <div class="d-flex gap-2 align-items-start">
+        <i class="bi bi-info-circle text-primary mt-1"></i>
+        <div class="small text-muted">
+          Após o envio você receberá um <strong>número de protocolo</strong> para acompanhar o andamento da sua solicitação a qualquer momento.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

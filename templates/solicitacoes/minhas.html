@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Minhas Solicitações{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold mb-1">Minhas Solicitações</h4>
+    <p class="text-muted mb-0 small">Histórico completo de todos os seus atendimentos</p>
+  </div>
+  <a href="{% url 'solicitacoes:nova' %}" class="btn btn-gov btn-sm">
+    <i class="bi bi-plus-circle me-1"></i>Nova
+  </a>
+</div>
+
+<!-- Filtro de status -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+  <a href="{% url 'solicitacoes:minhas' %}" class="btn btn-sm {% if not status_filtro %}btn-primary{% else %}btn-outline-secondary{% endif %}">Todos</a>
+  {% for val, label in status_choices %}
+  <a href="?status={{ val }}" class="btn btn-sm {% if status_filtro == val %}btn-primary{% else %}btn-outline-secondary{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+{% if solicitacoes %}
+<div class="row g-3">
+  {% for sol in solicitacoes %}
+  <div class="col-12">
+    <div class="card p-3 border-start border-4 border-{{ sol.get_status_cor }}">
+      <div class="row align-items-center g-2">
+        <div class="col-md-3">
+          <code class="fw-bold fs-6">{{ sol.protocolo }}</code>
+          <div class="text-muted small">{{ sol.data_abertura|date:"d/m/Y H:i" }}</div>
+        </div>
+        <div class="col-md-4">
+          <div class="fw-semibold">{{ sol.servico.nome }}</div>
+          <div class="text-muted small"><i class="bi bi-building me-1"></i>{{ sol.setor_responsavel }}</div>
+        </div>
+        <div class="col-md-3">
+          <span class="badge bg-{{ sol.get_status_cor }} status-badge">
+            <i class="bi {{ sol.get_status_icone }} me-1"></i>{{ sol.get_status_display }}
+          </span>
+          {% if sol.data_prazo %}
+          <div class="text-muted small mt-1"><i class="bi bi-calendar me-1"></i>Prazo: {{ sol.data_prazo|date:"d/m/Y" }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-2 text-md-end">
+          <a href="{% url 'solicitacoes:detalhe' sol.protocolo %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-eye me-1"></i>Detalhes
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+  <h5>Nenhuma solicitação encontrada</h5>
+  <p class="small">{% if status_filtro %}Tente remover o filtro de status.{% else %}Você ainda não abriu nenhuma solicitação.{% endif %}</p>
+  <a href="{% url 'solicitacoes:nova' %}" class="btn btn-gov btn-sm">Fazer uma solicitação</a>
+</div>
+{% endif %}
+{% endblock %}

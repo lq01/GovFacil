@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="row align-items-center py-5 mb-4 bg-white rounded-4 shadow-sm px-3">
+  <div class="col-lg-6">
+    <span class="badge bg-primary mb-3 px-3 py-2">Serviços Públicos Digitais</span>
+    <h1 class="display-5 fw-bold text-dark mb-3">
+      Acesse serviços públicos<br>
+      <span style="color:var(--gov-blue)">de onde você estiver.</span>
+    </h1>
+    <p class="lead text-muted mb-4">
+      O GovFácil centraliza os serviços da administração pública em um só lugar.
+      Sem filas, sem burocracia — acompanhe tudo pelo seu protocolo.
+    </p>
+    <div class="d-flex gap-3 flex-wrap">
+      {% if user.is_authenticated %}
+        <a href="{% url 'solicitacoes:nova' %}" class="btn btn-gov btn-lg px-4">
+          <i class="bi bi-plus-circle me-2"></i>Nova Solicitação
+        </a>
+        <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-secondary btn-lg px-4">
+          Meu Painel
+        </a>
+      {% else %}
+        <a href="{% url 'accounts:cadastro_cidadao' %}" class="btn btn-gov btn-lg px-4">
+          <i class="bi bi-person-plus me-2"></i>Criar conta
+        </a>
+        <a href="{% url 'solicitacoes:buscar' %}" class="btn btn-outline-secondary btn-lg px-4">
+          <i class="bi bi-search me-2"></i>Buscar protocolo
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-6 text-center d-none d-lg-block">
+    <i class="bi bi-building-fill-check text-primary" style="font-size: 10rem; opacity:.15;"></i>
+  </div>
+</div>
+
+<!-- Como funciona -->
+<div class="row g-4 mb-5">
+  <div class="col-12"><h4 class="fw-bold text-center text-muted mb-0">Como funciona</h4></div>
+  {% for num, icone, titulo, desc in passos %}
+  <div class="col-md-4">
+    <div class="card h-100 text-center p-4">
+      <div class="mb-3">
+        <span class="badge bg-primary rounded-circle p-2 fs-5" style="width:48px;height:48px;line-height:1.2">{{ num }}</span>
+      </div>
+      <i class="bi {{ icone }} fs-1 text-primary mb-2"></i>
+      <h6 class="fw-bold">{{ titulo }}</h6>
+      <p class="text-muted small mb-0">{{ desc }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Serviços em destaque -->
+<div class="mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Serviços disponíveis</h4>
+    <a href="{% url 'servicos:lista' %}" class="btn btn-outline-primary btn-sm">Ver todos <i class="bi bi-arrow-right ms-1"></i></a>
+  </div>
+  <div class="row g-3">
+    {% for servico in servicos_destaque %}
+    <div class="col-md-4 col-sm-6">
+      <div class="card h-100 p-3 border-start border-4 border-{{ servico.get_cor }}">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="bg-{{ servico.get_cor }} bg-opacity-10 rounded-circle p-3">
+            <i class="bi {{ servico.get_icone }} fs-4 text-{{ servico.get_cor }}"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-semibold">{{ servico.nome }}</h6>
+            <small class="text-muted">{{ servico.get_categoria_display }}</small>
+          </div>
+        </div>
+        <p class="text-muted small mb-3">{{ servico.descricao|truncatechars:80 }}</p>
+        <a href="{% url 'solicitacoes:nova' %}?servico={{ servico.pk }}" class="btn btn-sm btn-gov mt-auto">
+          <i class="bi bi-plus-circle me-1"></i>Solicitar
+        </a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center text-muted py-4">
+      <i class="bi bi-inbox fs-1"></i>
+      <p class="mt-2">Nenhum serviço cadastrado ainda.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3">
+  <div class="col-12"><h4 class="fw-bold text-center text-muted">Por que usar o GovFácil?</h4></div>
+  {% for icone, titulo, desc in vantagens %}
+  <div class="col-md-3 col-6">
+    <div class="card text-center p-3 h-100">
+      <i class="bi {{ icone }} fs-2 text-primary mb-2"></i>
+      <h6 class="fw-bold mb-1">{{ titulo }}</h6>
+      <p class="text-muted small mb-0">{{ desc }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
