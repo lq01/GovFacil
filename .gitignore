@@ -26,3 +26,6 @@ env/
 Thumbs.db
 desktop.ini
 .claude/
+
+# DB
+db.sqlite3
